@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -eu
+
+cd ~/
+exec 2>&1
+exec websockify --web /usr/share/novnc/ --unix-target /run/qemu-haiku.socket 6080
