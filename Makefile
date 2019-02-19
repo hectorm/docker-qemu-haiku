@@ -83,8 +83,8 @@ endef
 
 .PHONY: push-image
 push-image:
-	$(call push_image,$(IMAGE_LATEST_TAG))
 	$(call push_image,$(IMAGE_VERSION_TAG))
+	$(call push_image,$(IMAGE_LATEST_TAG))
 
 ##################################################
 ## "version" target
