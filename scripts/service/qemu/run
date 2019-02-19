@@ -9,7 +9,7 @@ QEMU_ARGS="${QEMU_ARGS-} -hda /var/lib/qemu/images/haiku.img"
 QEMU_ARGS="${QEMU_ARGS-} -cdrom /var/lib/qemu/iso/haiku.iso"
 QEMU_ARGS="${QEMU_ARGS-} -boot c"
 QEMU_ARGS="${QEMU_ARGS-} -usb -device usb-tablet"
-QEMU_ARGS="${QEMU_ARGS-} -netdev user,id=n0 -device rtl8139,netdev=n0"
+QEMU_ARGS="${QEMU_ARGS-} -netdev user,id=n0,hostfwd=tcp::6022-:22 -device rtl8139,netdev=n0"
 if [ "${QEMU_KVM}" = true ]; then QEMU_ARGS="${QEMU_ARGS-} -enable-kvm"; fi
 
 cd ~/
