@@ -54,7 +54,7 @@ save-image: $(IMAGE_TARBALL)
 
 $(IMAGE_TARBALL): build-image
 	mkdir -p '$(DISTDIR)'
-	$(call save_image,$(IMAGE_LATEST_TAG),$@)
+	$(call save_image,$(IMAGE_VERSION_TAG),$@)
 
 ##################################################
 ## "load-*" targets
@@ -64,9 +64,14 @@ define load_image
 	'$(DOCKER)' load -i '$(1)'
 endef
 
+define tag_image
+	'$(DOCKER)' tag '$(1)' '$(2)'
+endef
+
 .PHONY: load-image
 load-image:
 	$(call load_image,$(IMAGE_TARBALL))
+	$(call tag_image,$(IMAGE_VERSION_TAG),$(IMAGE_LATEST_TAG))
 
 ##################################################
 ## "push-*" targets
