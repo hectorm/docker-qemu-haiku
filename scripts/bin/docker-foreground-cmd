@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -eu
+
+# Create Haiku disk
+qemu-img create -f "${QEMU_DISK_FORMAT}" /var/lib/qemu/images/haiku.img "${QEMU_DISK_SIZE}"
+
+# Start all services
+exec runsvdir -P /etc/service/

@@ -3,6 +3,9 @@ FROM ubuntu:18.04
 # Environment
 ENV QEMU_CPU=2
 ENV QEMU_RAM=1024M
+ENV QEMU_DISK_SIZE=16G
+ENV QEMU_DISK_FORMAT=qcow2
+ENV QEMU_KEYBOARD=en-us
 ENV QEMU_KVM=false
 
 # Install system packages
@@ -33,13 +36,13 @@ RUN mkdir /tmp/haiku/ \
 	&& mv /tmp/haiku/*.iso /var/lib/qemu/iso/haiku.iso \
 	&& rm -rf /tmp/haiku/
 
-# Create Haiku disk
-RUN qemu-img create -f qcow2 /var/lib/qemu/images/haiku.img 32G
-
 # Copy services
 COPY --chown=root:root scripts/service/ /etc/service/
+
+# Copy scripts
+COPY --chown=root:root scripts/bin/ /usr/local/bin/
 
 # Expose noVNC port
 EXPOSE 6080/tcp
 
-CMD ["runsvdir", "-P", "/etc/service/"]
+CMD ["/usr/local/bin/docker-foreground-cmd"]

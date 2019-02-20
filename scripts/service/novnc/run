@@ -4,4 +4,4 @@ set -eu
 
 cd ~/
 exec 2>&1
-exec websockify --web /usr/share/novnc/ --unix-target /run/qemu-haiku.socket 6080
+exec /usr/share/novnc/utils/launch.sh --listen 6080 --vnc localhost:5900
