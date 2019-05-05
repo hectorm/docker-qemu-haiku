@@ -20,7 +20,7 @@ endif
 IMAGE_LATEST_TAG := $(IMAGE_NAMESPACE)/$(IMAGE_NAME):latest
 IMAGE_VERSION_TAG := $(IMAGE_NAMESPACE)/$(IMAGE_NAME):$(IMAGE_VERSION)
 
-IMAGE_TARBALL := $(DISTDIR)/$(IMAGE_NAME).tgz
+IMAGE_TARBALL := $(DISTDIR)/$(IMAGE_NAME).txz
 
 DOCKERFILE := ./Dockerfile
 
@@ -47,7 +47,7 @@ build-image:
 ##################################################
 
 define save_image
-	'$(DOCKER)' save '$(1)' | gzip -n > '$(2)'
+	'$(DOCKER)' save '$(1)' | xz -T0 > '$(2)'
 endef
 
 .PHONY: save-image
