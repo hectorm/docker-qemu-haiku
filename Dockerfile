@@ -1,4 +1,8 @@
-FROM docker.io/debian:sid
+##################################################
+## "qemu-haiku" stage
+##################################################
+
+FROM docker.io/debian:sid AS qemu-haiku
 
 # Environment
 ENV QEMU_CPU=2
