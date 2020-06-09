@@ -54,8 +54,8 @@ RUN mkdir -p /opt/novnc/utils/websockify/ \
 	&& rm -f /tmp/websockify.tgz
 
 # Download Haiku ISO
-ARG HAIKU_ISO_URL=https://cdn.haiku-os.org/haiku-release/r1beta1/haiku-r1beta1-x86_64-anyboot.zip
-ARG HAIKU_ISO_CHECKSUM=297b1410dfd74f1a404c1d2d0e62beaee77ecde7711a71156e15f8d33f2899ed
+ARG HAIKU_ISO_URL=https://cdn.haiku-os.org/haiku-release/r1beta2/haiku-r1beta2-x86_64-anyboot.zip
+ARG HAIKU_ISO_CHECKSUM=24ea1839930a48828387797a4f4b2a142bafd71da4d86788e2dbe51f4eb68aff
 RUN mkdir -p /tmp/haiku/ /var/lib/qemu/iso/ /var/lib/qemu/images/ \
 	&& curl -Lo /tmp/haiku/haiku.zip "${HAIKU_ISO_URL:?}" \
 	&& printf '%s' "${HAIKU_ISO_CHECKSUM:?}  /tmp/haiku/haiku.zip" | sha256sum -c \
