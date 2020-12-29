@@ -47,7 +47,7 @@ build-image:
 ##################################################
 
 define save_image
-	'$(DOCKER)' save '$(1)' | zstd -T0 --ultra -22 > '$(2)'
+	'$(DOCKER)' save '$(1)' | zstd --ultra -22 > '$(2)'
 endef
 
 .PHONY: save-image
