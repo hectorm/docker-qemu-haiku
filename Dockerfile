@@ -10,7 +10,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 	&& apt-get install -y --no-install-recommends \
 		ca-certificates \
 		curl \
-		unzip \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Download noVNC
@@ -30,11 +29,10 @@ RUN printf '%s' "${WEBSOCKIFY_TARBALL_CHECKSUM:?}  /tmp/websockify.tgz" | sha256
 RUN mkdir /tmp/websockify/ && tar -xzf /tmp/websockify.tgz --strip-components=1 -C /tmp/websockify/
 
 # Download Haiku ISO
-ARG HAIKU_ISO_URL=https://cdn.haiku-os.org/haiku-release/r1beta2/haiku-r1beta2-x86_64-anyboot.zip
-ARG HAIKU_ISO_CHECKSUM=24ea1839930a48828387797a4f4b2a142bafd71da4d86788e2dbe51f4eb68aff
-RUN curl -Lo /tmp/haiku.zip "${HAIKU_ISO_URL:?}"
-RUN printf '%s' "${HAIKU_ISO_CHECKSUM:?}  /tmp/haiku.zip" | sha256sum -c
-RUN unzip -p /tmp/haiku.zip 'haiku-*.iso' > /tmp/haiku.iso
+ARG HAIKU_ISO_URL=https://cdn.haiku-os.org/haiku-release/r1beta3/haiku-r1beta3-x86_64-anyboot.iso
+ARG HAIKU_ISO_CHECKSUM=33c8b58c4bd3d6479554afbd3a9b08709c8f8086e98ad339b866722e9bb1e820
+RUN curl -Lo /tmp/haiku.iso "${HAIKU_ISO_URL:?}"
+RUN printf '%s' "${HAIKU_ISO_CHECKSUM:?}  /tmp/haiku.iso" | sha256sum -c
 
 ##################################################
 ## "qemu-haiku" stage
