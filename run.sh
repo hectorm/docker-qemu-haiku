@@ -41,7 +41,7 @@ printf -- '%s\n' "Creating \"${CONTAINER_NAME:?}\" container..."
 	--publish '127.0.0.1:6080:6080/tcp' \
 	--publish '127.0.0.1:10022:10022/tcp' \
 	--publish '127.0.0.1:15900:15900/tcp' \
-	--privileged --env QEMU_VM_KVM=true \
+	--env QEMU_VM_KVM=true --device /dev/kvm \
 	"${IMAGE_NAME:?}" "$@" >/dev/null
 
 printf -- '%s\n\n' 'Done!'
