@@ -1,8 +1,11 @@
+m4_changequote([[, ]])
+
 ##################################################
 ## "build" stage
 ##################################################
 
-FROM docker.io/ubuntu:20.04 AS build
+m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:20.04]], [[FROM docker.io/ubuntu:20.04]]) AS build
+m4_ifdef([[CROSS_QEMU]], [[COPY --from=docker.io/hectormolinero/qemu-user-static:latest CROSS_QEMU CROSS_QEMU]])
 
 # Install system packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -35,10 +38,11 @@ RUN curl -Lo /tmp/haiku.iso "${HAIKU_ISO_URL:?}"
 RUN printf '%s' "${HAIKU_ISO_CHECKSUM:?}  /tmp/haiku.iso" | sha256sum -c
 
 ##################################################
-## "qemu-haiku" stage
+## "main" stage
 ##################################################
 
-FROM docker.io/ubuntu:20.04 AS qemu-haiku
+m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:20.04]], [[FROM docker.io/ubuntu:20.04]]) AS main
+m4_ifdef([[CROSS_QEMU]], [[COPY --from=docker.io/hectormolinero/qemu-user-static:latest CROSS_QEMU CROSS_QEMU]])
 
 # Install system packages
 RUN export DEBIAN_FRONTEND=noninteractive \
