@@ -92,10 +92,10 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 	&& rm -f ./haiku-nightly.image
 
 ##################################################
-## "main" stage
+## "base" stage
 ##################################################
 
-m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:20.04]], [[FROM docker.io/ubuntu:20.04]]) AS main
+m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:20.04]], [[FROM docker.io/ubuntu:20.04]]) AS base
 m4_ifdef([[CROSS_QEMU]], [[COPY --from=docker.io/hectormolinero/qemu-user-static:latest CROSS_QEMU CROSS_QEMU]])
 
 # Install system packages
@@ -140,5 +140,22 @@ COPY --chown=root:root ./scripts/bin/ /usr/local/bin/
 
 # Copy net init scripts
 COPY --chown=root:root ./scripts/vm-net-init/ /etc/vm-net-init/
+
+##################################################
+## "test" stage
+##################################################
+
+FROM base AS test
+
+RUN if [ "$(uname -m)" = 'x86_64' ]; then \
+		container-init & \
+		timeout 900 vmshell uname -a; \
+	fi
+
+##################################################
+## "main" stage
+##################################################
+
+FROM base AS main
 
 ENTRYPOINT ["/usr/local/bin/container-init"]
