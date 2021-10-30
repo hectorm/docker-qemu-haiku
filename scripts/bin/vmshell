@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eu
+
+# Wait until SSH is available
+until ssh -n vm exit >/dev/null 2>&1; do sleep 1; done
+
+if [ -t 1 ]; then
+	exec ssh vm -- "$@"
+else
+	exec ssh -T vm -- "$@"
+fi

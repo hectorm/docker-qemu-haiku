@@ -39,9 +39,9 @@ printf -- '%s\n' "Creating \"${CONTAINER_NAME:?}\" container..."
 	--log-opt max-size=32m \
 	--publish '127.0.0.1:5900:5900/tcp' \
 	--publish '127.0.0.1:6080:6080/tcp' \
-	--publish '127.0.0.1:10022:10022/tcp' \
-	--publish '127.0.0.1:15900:15900/tcp' \
-	--env QEMU_VM_KVM=true --device /dev/kvm \
+	--publish '127.0.0.1:2222:2222/tcp' \
+	--env VM_KVM=true --device /dev/kvm \
+	--env VM_SSH_KEYS="$(find "${HOME:?}"/.ssh/ -name 'id_*.pub' -exec awk 1 '{}' ';')" \
 	"${IMAGE_NAME:?}" "$@" >/dev/null
 
 printf -- '%s\n\n' 'Done!'

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -eu
+
+# Generate internal SSH key
+if [ ! -f "${HOME:?}"/.ssh/id_ed25519 ]; then
+	ssh-keygen -t ed25519 -f "${HOME:?}"/.ssh/id_ed25519 -N '' >/dev/null
+fi
+
+VM_SSH_KEY_INTERNAL="$(cat "${HOME:?}"/.ssh/id_ed25519.pub)"
+export VM_SSH_KEY_INTERNAL
+
+# Dump VM environment variables
+awk -f- > /etc/vm-net-init/00-vm.env <<-'EOF'
+	BEGIN {
+		for (v in ENVIRON) {
+			if (v ~ /^VM_/) {
+				gsub(/'/, "'\\''", ENVIRON[v]);
+				print(v"='"ENVIRON[v]"'");
+			}
+		}
+	}
+EOF
+
+# Start all services
+exec runsvdir -P /etc/service/

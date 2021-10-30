@@ -4,15 +4,40 @@ m4_changequote([[, ]])
 ## "build" stage
 ##################################################
 
-m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:20.04]], [[FROM docker.io/ubuntu:20.04]]) AS build
-m4_ifdef([[CROSS_QEMU]], [[COPY --from=docker.io/hectormolinero/qemu-user-static:latest CROSS_QEMU CROSS_QEMU]])
+FROM docker.io/ubuntu:20.04 AS build
 
 # Install system packages
 RUN export DEBIAN_FRONTEND=noninteractive \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
+		autoconf \
+		automake \
+		bash \
+		bison \
+		build-essential \
 		ca-certificates \
 		curl \
+		device-tree-compiler \
+		flex \
+		gawk \
+		gcc-multilib \
+		git \
+		less \
+		libtool \
+		moreutils \
+		mtools \
+		nasm \
+		python3 \
+		qemu-utils \
+		qemu-system-x86 \
+		texinfo \
+		u-boot-tools \
+		unzip \
+		util-linux \
+		wget \
+		xorriso \
+		zip \
+		zlib1g-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Download noVNC
@@ -31,11 +56,40 @@ RUN curl -Lo /tmp/websockify.tgz "${WEBSOCKIFY_TARBALL_URL:?}"
 RUN printf '%s' "${WEBSOCKIFY_TARBALL_CHECKSUM:?}  /tmp/websockify.tgz" | sha256sum -c
 RUN mkdir /tmp/websockify/ && tar -xzf /tmp/websockify.tgz --strip-components=1 -C /tmp/websockify/
 
-# Download Haiku ISO
-ARG HAIKU_ISO_URL=https://cdn.haiku-os.org/haiku-release/r1beta3/haiku-r1beta3-x86_64-anyboot.iso
-ARG HAIKU_ISO_CHECKSUM=33c8b58c4bd3d6479554afbd3a9b08709c8f8086e98ad339b866722e9bb1e820
-RUN curl -Lo /tmp/haiku.iso "${HAIKU_ISO_URL:?}"
-RUN printf '%s' "${HAIKU_ISO_CHECKSUM:?}  /tmp/haiku.iso" | sha256sum -c
+# Build Haiku
+ARG HAIKU_TREEISH=r1beta3
+ARG HAIKU_REMOTE=https://review.haiku-os.org/haiku.git
+ARG BUILDTOOLS_TREEISH=$HAIKU_TREEISH
+ARG BUILDTOOLS_REMOTE=https://review.haiku-os.org/buildtools.git
+WORKDIR /tmp/buildtools/
+RUN git clone "${BUILDTOOLS_REMOTE:?}" ./
+RUN git checkout "${BUILDTOOLS_TREEISH:?}"
+RUN git submodule update --init --recursive
+WORKDIR /tmp/buildtools/jam/
+RUN make -j"$(nproc)"
+RUN ./jam0 install
+WORKDIR /tmp/haiku/
+RUN git clone "${HAIKU_REMOTE:?}" ./
+RUN git checkout "${HAIKU_TREEISH:?}"
+RUN git submodule update --init --recursive
+COPY --chown=root:root ./patches/haiku/ /tmp/patches/haiku/
+RUN git apply -v /tmp/patches/haiku/*.patch
+RUN ./configure \
+		--distro-compatibility official \
+		--cross-tools-source /tmp/buildtools/ \
+		--build-cross-tools x86_64 \
+		--use-gcc-pipe \
+		-j"$(nproc)"
+COPY --chown=root:root ./scripts/vm-first-login/ /tmp/haiku/data/system/boot/first_login/
+RUN export HAIKU_IMAGE_SIZE=131072 \
+	&& jam -qj"$(nproc)" '@nightly-raw' \
+	&& cd ./generated/ \
+	&& timeout 900 qemu-system-x86_64 \
+		-accel tcg,thread=single -smp 2 -m 512 -serial stdio -display none \
+		-drive file=./haiku-nightly.image,index=0,media=disk,format=raw \
+		-netdev user,id=n0 -device e1000,netdev=n0 \
+	&& qemu-img convert -f raw -O qcow2 ./haiku-nightly.image ./haiku.qcow2 \
+	&& rm -f ./haiku-nightly.image
 
 ##################################################
 ## "main" stage
@@ -49,6 +103,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		net-tools \
+		netcat-openbsd \
+		openssh-client \
 		procps \
 		python3 \
 		qemu-kvm \
@@ -58,19 +114,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Environment
-ENV QEMU_VM_CPU=2
-ENV QEMU_VM_RAM=1024M
-ENV QEMU_VM_DISK_SIZE=16G
-ENV QEMU_VM_DISK_FORMAT=qcow2
-ENV QEMU_VM_KEYBOARD=en-us
-ENV QEMU_VM_NET_DEVICE=e1000
-ENV QEMU_VM_NET_OPTIONS=hostfwd=tcp::10022-:22,hostfwd=tcp::15900-:5900
-ENV QEMU_VM_BOOT_ORDER=cd
-ENV QEMU_VM_BOOT_MENU=off
-ENV QEMU_VM_KVM=false
-
-# Create some directories for QEMU
-RUN mkdir -p /var/lib/qemu/iso/ /var/lib/qemu/images/
+ENV VM_CPU=2
+ENV VM_RAM=1024M
+ENV VM_KEYBOARD=en-us
+ENV VM_NET_OPTIONS=
+ENV VM_KVM=false
 
 # Copy noVNC
 COPY --from=build --chown=root:root /tmp/novnc/ /opt/novnc/
@@ -78,18 +126,19 @@ COPY --from=build --chown=root:root /tmp/novnc/ /opt/novnc/
 # Copy Websockify
 COPY --from=build --chown=root:root /tmp/websockify/ /opt/novnc/utils/websockify/
 
-# Copy Haiku ISO
-COPY --from=build --chown=root:root /tmp/haiku.iso /var/lib/qemu/iso/haiku.iso
+# Copy Haiku disk
+COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qemu/haiku.qcow2
+
+# Copy SSH config
+COPY --chown=root:root ./config/ssh/ /etc/ssh/
 
 # Copy services
 COPY --chown=root:root ./scripts/service/ /etc/service/
 
-# Copy scripts
+# Copy bin scripts
 COPY --chown=root:root ./scripts/bin/ /usr/local/bin/
 
-# VNC
-EXPOSE 5900/tcp
-# noVNC
-EXPOSE 6080/tcp
+# Copy net init scripts
+COPY --chown=root:root ./scripts/vm-net-init/ /etc/vm-net-init/
 
-CMD ["/usr/local/bin/container-foreground-cmd"]
+ENTRYPOINT ["/usr/local/bin/container-init"]

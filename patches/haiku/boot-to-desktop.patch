@@ -1,0 +1,26 @@
+diff --git a/build/jam/images/definitions/minimum b/build/jam/images/definitions/minimum
+index 52d78a3a0d..275d0601f1 100644
+--- a/build/jam/images/definitions/minimum
++++ b/build/jam/images/definitions/minimum
+@@ -289,3 +289,7 @@ for repository in $(HAIKU_REPOSITORIES) {
+ 	AddFilesToHaikuImage system cache package-repositories
+ 		: $(cache) : $(repository:G=) ;
+ }
++
++# add default 'Locale settings'
++AddFilesToHaikuImage home config settings
++	: $(HAIKU_TOP)/data/settings/first_boot/Locale\ settings ;
+diff --git a/data/settings/first_boot/Locale settings b/data/settings/first_boot/Locale settings
+new file mode 100644
+index 0000000000000000000000000000000000000000..71392d4f701d8a84fef53180f8650b71dab8da33
+GIT binary patch
+literal 391
+zcmaKoO$x#=5QQh!Uld&E0lb3Z2^5P9rE0rz8FVbgHi0A++<FAJ9#&_H6%=*g3z;`B
+zc_H(qKLjd4+<(-KW(}f7)QKv=Rh|*hflU-nxo01jM+j&aI{W)XkEndnN2GDI2VIy&
+z+X>&ptO?HaU;v9Cc<GWf_6ume<zAk;2hBJC^{MZ)I-zojR<?K_D%eYhzBZY3MdIh;
+zlI-6&w>TQlb#A7q-W>s`51mO=Y<;7%mB9lVgZqV4aV}#7NXs3655*sn6z$o9cmS>l
+BUvdBd
+
+literal 0
+HcmV?d00001
+
