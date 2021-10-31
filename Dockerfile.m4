@@ -73,6 +73,8 @@ RUN git clone "${HAIKU_REMOTE:?}" ./
 RUN git checkout "${HAIKU_TREEISH:?}"
 RUN git submodule update --init --recursive
 COPY --chown=root:root ./patches/haiku/ /tmp/patches/haiku/
+RUN find /tmp/patches/haiku/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
+RUN find /tmp/patches/haiku/ -type f -not -perm 0644 -exec chmod 0644 '{}' ';'
 RUN git apply -v /tmp/patches/haiku/*.patch
 RUN ./configure \
 		--distro-compatibility official \
@@ -81,6 +83,8 @@ RUN ./configure \
 		--use-gcc-pipe \
 		-j"$(nproc)"
 COPY --chown=root:root ./scripts/vm-first-login/ /tmp/haiku/data/system/boot/first_login/
+RUN find /tmp/haiku/data/system/boot/first_login/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
+RUN find /tmp/haiku/data/system/boot/first_login/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
 RUN export HAIKU_IMAGE_SIZE=131072 \
 	&& jam -qj"$(nproc)" '@nightly-raw' \
 	&& cd ./generated/ \
@@ -131,15 +135,23 @@ COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qe
 
 # Copy SSH config
 COPY --chown=root:root ./config/ssh/ /etc/ssh/
+RUN find /etc/ssh/ssh_config.d/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
+RUN find /etc/ssh/ssh_config.d/ -type f -not -perm 0644 -exec chmod 0644 '{}' ';'
 
 # Copy services
 COPY --chown=root:root ./scripts/service/ /etc/service/
+RUN find /etc/service/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
+RUN find /etc/service/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
 
 # Copy bin scripts
 COPY --chown=root:root ./scripts/bin/ /usr/local/bin/
+RUN find /usr/local/bin/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
+RUN find /usr/local/bin/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
 
 # Copy net init scripts
 COPY --chown=root:root ./scripts/vm-net-init/ /etc/vm-net-init/
+RUN find /etc/vm-net-init/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
+RUN find /etc/vm-net-init/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
 
 ENTRYPOINT ["/usr/local/bin/container-init"]
 
