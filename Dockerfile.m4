@@ -141,6 +141,8 @@ COPY --chown=root:root ./scripts/bin/ /usr/local/bin/
 # Copy net init scripts
 COPY --chown=root:root ./scripts/vm-net-init/ /etc/vm-net-init/
 
+ENTRYPOINT ["/usr/local/bin/container-init"]
+
 ##################################################
 ## "test" stage
 ##################################################
@@ -157,5 +159,3 @@ RUN if [ "$(uname -m)" = 'x86_64' ]; then \
 ##################################################
 
 FROM base AS main
-
-ENTRYPOINT ["/usr/local/bin/container-init"]
