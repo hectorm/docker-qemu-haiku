@@ -22,5 +22,9 @@ awk -f- > /etc/vm-net-init/00-vm.env <<-'EOF'
 	}
 EOF
 
-# Start all services
-exec runsvdir -P /etc/service/
+if [ "$#" -gt 0 ] || [ -t 0 ] || [ -t 1 ]; then
+	nohup runsvdir -P /etc/service/ >/dev/null 2>&1 &
+	exec vmshell "$@"
+else
+	exec runsvdir -P /etc/service/
+fi
