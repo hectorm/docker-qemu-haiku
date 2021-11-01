@@ -123,6 +123,7 @@ ENV VM_RAM=1024M
 ENV VM_KEYBOARD=en-us
 ENV VM_NET_OPTIONS=
 ENV VM_KVM=false
+ENV SVDIR=/etc/service/
 
 # Copy noVNC
 COPY --from=build --chown=root:root /tmp/novnc/ /opt/novnc/
