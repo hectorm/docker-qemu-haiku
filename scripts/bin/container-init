@@ -22,9 +22,16 @@ awk -f- > /etc/vm-net-init/00-vm.env <<-'EOF'
 	}
 EOF
 
+stop() {
+	for s in "${SVDIR:?}"/*; do sv force-stop "${s:?}" >/dev/null 2>&1; done
+	kill -HUP "${RUNSVDIRPID:?}"; wait "${RUNSVDIRPID:?}"
+}
+trap stop EXIT TERM INT HUP
+
 if [ "$#" -gt 0 ] || [ -t 0 ] || [ -t 1 ]; then
-	nohup runsvdir -P /etc/service/ >/dev/null 2>&1 &
-	exec vmshell "$@"
+	runsvdir -P "${SVDIR:?}" >/dev/null 2>&1 & RUNSVDIRPID=$!
+	vmshell "$@"
 else
-	exec runsvdir -P /etc/service/
+	runsvdir -P "${SVDIR:?}" & RUNSVDIRPID=$!
+	wait "${RUNSVDIRPID:?}"
 fi
