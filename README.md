@@ -8,14 +8,16 @@ docker run --detach \
   --name qemu-haiku \
   --device /dev/kvm \
   --publish 127.0.0.1:2222:2222/tcp \
+  --publish 127.0.0.1:5900:5900/tcp \
   --publish 127.0.0.1:6080:6080/tcp \
   --env VM_SSH_KEYS="$(find ~/.ssh/ -name 'id_*.pub' -exec awk 1 '{}' ';')" \
   docker.io/hectormolinero/qemu-haiku:latest
 ```
 
 > The instance can be accessed from:
-> * 2222/TCP (SSH): `ssh -p 2222 user@127.0.0.1`
-> * 6080/TCP (noVNC): http://127.0.0.1:6080/vnc.html
+> * SSH (2222/TCP): `ssh -p 2222 user@127.0.0.1`
+> * VNC (5900/TCP): any VNC client, without credentials.
+> * noVNC (6080/TCP): http://127.0.0.1:6080/vnc.html
 > * Shell: `docker exec -it qemu-haiku vmshell`
 
 ## Environment variables
