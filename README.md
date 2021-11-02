@@ -6,9 +6,9 @@ A Docker image for the [Haiku](https://www.haiku-os.org) operating system.
 ```sh
 docker run --detach \
   --name qemu-haiku \
+  --device /dev/kvm \
   --publish 127.0.0.1:2222:2222/tcp \
   --publish 127.0.0.1:6080:6080/tcp \
-  --env VM_KVM=true --device /dev/kvm \
   --env VM_SSH_KEYS="$(find ~/.ssh/ -name 'id_*.pub' -exec awk 1 '{}' ';')" \
   docker.io/hectormolinero/qemu-haiku:latest
 ```
@@ -29,8 +29,8 @@ Amount of memory the VM is permitted to use (`1024M` by default).
 VM keyboard layout (`en-us` by default).
 
 #### `VM_KVM`
-Start QEMU in KVM mode (`false` by default).
-> The `--device /dev/kvm` option is required to use KVM in the container.
+Start QEMU in KVM mode (`true` by default).
+> The `--device /dev/kvm` option is required for this variable to take effect.
 
 #### `VM_SSH_KEY*`
 SSH keys to be added to the VM at startup.
