@@ -165,7 +165,7 @@ FROM base AS test
 
 RUN if [ "$(uname -m)" = 'x86_64' ]; then \
 		container-init & \
-		timeout 900 vmshell uname -a; \
+		timeout 900 vmshell uname -a || exit 1; \
 	fi
 
 ##################################################
@@ -173,3 +173,6 @@ RUN if [ "$(uname -m)" = 'x86_64' ]; then \
 ##################################################
 
 FROM base AS main
+
+# Dummy instruction so BuildKit does not skip the test stage
+RUN --mount=type=bind,from=test,source=/mnt/,target=/mnt/
