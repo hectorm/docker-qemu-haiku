@@ -168,7 +168,10 @@ FROM base AS test
 
 RUN if [ "$(uname -m)" = 'x86_64' ]; then \
 		container-init & \
-		timeout 900 vmshell uname -a || exit 1; \
+		printf '%s\n' 'The quick brown fox jumps over the lazy dog' > /tmp/in || exit 1; \
+		cat /tmp/in | timeout 900 vmshell 'cat - > /tmp/local; uname -a' || exit 1; \
+		scp vm:/tmp/local /tmp/out || exit 1; \
+		cmp -s /tmp/in /tmp/out || exit 1; \
 	fi
 
 ##################################################
