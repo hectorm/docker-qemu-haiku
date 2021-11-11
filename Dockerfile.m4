@@ -89,9 +89,10 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 	&& jam -qj"$(nproc)" '@nightly-raw' \
 	&& cd ./generated/ \
 	&& timeout 900 qemu-system-x86_64 \
-		-accel tcg,thread=single -smp 2 -m 512 -serial stdio -display none \
+		-accel tcg,thread=single -smp 2 -m 512M \
+		-serial stdio -device VGA -display none \
+		-device e1000,netdev=n0 -netdev user,id=n0,restrict=off \
 		-drive file=./haiku-nightly.image,index=0,media=disk,format=raw \
-		-netdev user,id=n0 -device e1000,netdev=n0 \
 	&& qemu-img convert -f raw -O qcow2 ./haiku-nightly.image ./haiku.qcow2 \
 	&& rm -f ./haiku-nightly.image
 
@@ -122,7 +123,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 ENV VM_CPU=2
 ENV VM_RAM=1024M
 ENV VM_KEYBOARD=en-us
-ENV VM_NET_OPTIONS=
+ENV VM_NET_GUESTFWD_OPTIONS=guestfwd=tcp:10.0.2.254:1337-cmd:"nc 127.0.0.1 1337"
+ENV VM_NET_HOSTFWD_OPTIONS=hostfwd=tcp::2222-:22
+ENV VM_NET_EXTRA_OPTIONS=
 ENV VM_KVM=true
 ENV SVDIR=/etc/service/
 
