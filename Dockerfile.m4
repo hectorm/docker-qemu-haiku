@@ -136,7 +136,7 @@ COPY --from=build --chown=root:root /tmp/novnc/ /opt/novnc/
 COPY --from=build --chown=root:root /tmp/websockify/ /opt/novnc/utils/websockify/
 
 # Copy Haiku disk
-COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qemu/haiku.qcow2
+COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qemu/image/haiku.qcow2
 
 # Copy SSH config
 COPY --chown=root:root ./config/ssh/ /etc/ssh/
