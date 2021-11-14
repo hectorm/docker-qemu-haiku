@@ -89,7 +89,7 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 	&& jam -qj"$(nproc)" '@nightly-raw' \
 	&& cd ./generated/ \
 	&& timeout 900 qemu-system-x86_64 \
-		-accel tcg,thread=single -smp 2 -m 512M \
+		-machine q35 -smp 2 -m 512M -accel tcg,thread=single \
 		-serial stdio -device VGA -display none \
 		-device e1000,netdev=n0 -netdev user,id=n0,restrict=off \
 		-drive file=./haiku-nightly.image,index=0,media=disk,format=raw \
