@@ -90,9 +90,10 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 	&& cd ./generated/ \
 	&& timeout 900 qemu-system-x86_64 \
 		-machine q35 -smp 2 -m 512M -accel tcg,thread=single \
-		-serial stdio -device VGA -display none \
-		-device e1000,netdev=n0 -netdev user,id=n0,restrict=off \
-		-drive file=./haiku-nightly.image,index=0,media=disk,format=raw \
+		-device VGA -display none -serial stdio \
+		-device virtio-net-pci,netdev=n0 -netdev user,id=n0,restrict=off \
+		-device virtio-scsi-pci,id=scsi \
+		-device scsi-hd,bus=scsi.0,drive=c0 -blockdev driver=raw,node-name=c0,file.driver=file,file.filename=./haiku-nightly.image \
 	&& qemu-img convert -f raw -O qcow2 ./haiku-nightly.image ./haiku.qcow2 \
 	&& rm -f ./haiku-nightly.image
 
@@ -136,7 +137,7 @@ COPY --from=build --chown=root:root /tmp/novnc/ /opt/novnc/
 COPY --from=build --chown=root:root /tmp/websockify/ /opt/novnc/utils/websockify/
 
 # Copy Haiku disk
-COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qemu/image/haiku.qcow2
+COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qemu/disk/haiku.qcow2
 
 # Copy SSH config
 COPY --chown=root:root ./config/ssh/ /etc/ssh/

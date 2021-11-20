@@ -4,10 +4,12 @@ set -eu
 
 set --
 set -- "$@" -machine q35 -smp "${VM_CPU:?}" -m "${VM_RAM:?}"
-set -- "$@" -serial stdio -monitor unix:/run/qemu-monitor,server,nowait -device VGA -display vnc=:0
-set -- "$@" -device e1000,netdev=n0 -netdev user,id=n0,"${VM_NET_GUESTFWD_OPTIONS?}","${VM_NET_HOSTFWD_OPTIONS?}","${VM_NET_EXTRA_OPTIONS?}"
-set -- "$@" -drive file=/var/lib/qemu/image/haiku.qcow2,index=0,media=disk,format=qcow2
-set -- "$@" -usb -device usb-tablet -k "${VM_KEYBOARD:?}"
+set -- "$@" -device VGA -display vnc=:0 -serial stdio -monitor unix:/run/qemu-monitor,server,nowait
+set -- "$@" -device virtio-net-pci,netdev=n0 -netdev user,id=n0,"${VM_NET_GUESTFWD_OPTIONS?}","${VM_NET_HOSTFWD_OPTIONS?}","${VM_NET_EXTRA_OPTIONS?}"
+set -- "$@" -device virtio-scsi-pci,id=scsi
+set -- "$@" -device scsi-hd,bus=scsi.0,drive=c0 -blockdev driver=qcow2,node-name=c0,file.driver=file,file.filename=/var/lib/qemu/disk/haiku.qcow2
+set -- "$@" -usb -device usb-tablet
+set -- "$@" -k "${VM_KEYBOARD:?}"
 
 if [ "${VM_KVM:?}" = true ] && [ -c /dev/kvm ]; then
 	set -- "$@" -accel kvm -cpu host
@@ -15,14 +17,14 @@ else
 	set -- "$@" -accel tcg,thread=single
 fi
 
-iso_i=2
-for iso in /var/lib/qemu/iso/*; do
-	[ -f "${iso:?}" ] || continue
-	set -- "$@" -drive file="${iso:?}",index="${iso_i:?}",media=cdrom,format=raw
-	iso_i="$((iso_i + 1))"
+cd_i=0
+for cd in /var/lib/qemu/cd/*; do
+	[ -f "${cd:?}" ] || continue
+	set -- "$@" -device scsi-cd,bus=scsi.0,drive=d"${cd_i:?}" -blockdev driver=raw,node-name=d"${cd_i:?}",file.driver=file,file.filename="${cd:?}",read-only=on
+	cd_i="$((cd_i + 1))"
 done
 
-if [ "${iso_i:?}" -gt 2 ]; then
+if [ "${cd_i:?}" -gt 0 ]; then
 	set -- "$@" -boot order=dc,menu=on,splash-time=5000
 fi
 
