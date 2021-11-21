@@ -93,7 +93,7 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 		-device VGA -display none -serial stdio \
 		-device virtio-net-pci,netdev=n0 -netdev user,id=n0,restrict=off \
 		-device virtio-scsi-pci,id=scsi \
-		-device scsi-hd,bus=scsi.0,drive=c0 -blockdev driver=raw,node-name=c0,file.driver=file,file.filename=./haiku-nightly.image \
+		-device scsi-hd,id=disk0,bus=scsi.0,drive=disk0 -blockdev driver=raw,node-name=disk0,file.driver=file,file.filename=./haiku-nightly.image \
 	&& qemu-img convert -f raw -O qcow2 ./haiku-nightly.image ./haiku.qcow2 \
 	&& rm -f ./haiku-nightly.image
 
