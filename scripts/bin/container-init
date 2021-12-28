@@ -2,6 +2,9 @@
 
 set -eu
 
+HOME="$(getent passwd "$(id -u)" | cut -d: -f6)"
+export HOME
+
 # Generate internal SSH key
 if [ ! -f "${HOME:?}"/.ssh/id_ed25519 ]; then
 	ssh-keygen -t ed25519 -f "${HOME:?}"/.ssh/id_ed25519 -N '' >/dev/null
