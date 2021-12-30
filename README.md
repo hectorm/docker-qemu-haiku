@@ -37,5 +37,47 @@ Start QEMU in KVM mode (`true` by default).
 #### `VM_SSH_KEY*`
 SSH keys to be added to the VM at startup.
 
+## Use in CI
+
+### GitHub Actions:
+
+```yaml
+test-haiku:
+  name: 'Test on Haiku'
+  runs-on: 'ubuntu-latest'
+  container: 'docker.io/hectormolinero/qemu-haiku:latest'
+  steps:
+    - name: 'Wait until the VM is ready'
+      run: 'container-init & timeout 600 vmshell exit 0'
+    - name: 'Install packages'
+      run: 'vmshell pkgman install -y make'
+    - name: 'Checkout project'
+      uses: 'actions/checkout@main'
+    - name: 'Copy project to VM'
+      run: 'vmshell mkdir ./src/; tar -cf - ./ | vmshell tar -xf - -C ./src/'
+    - name: 'Test project'
+      run: 'vmshell make -C ./src/ test'
+```
+
+### GitLab CI:
+
+```yaml
+test-haiku:
+  stage: 'test'
+  image:
+    name: 'docker.io/hectormolinero/qemu-haiku:latest'
+    entrypoint: ['']
+  before_script:
+    - 'container-init & timeout 600 vmshell exit 0'
+    - 'vmshell pkgman install -y make'
+    - 'vmshell mkdir ./src/; tar -cf - ./ | vmshell tar -xf - -C ./src/'
+  script:
+    - 'vmshell make -C ./src/ test'
+```
+
+> Please note that at the time of writing GitHub and GitLab hosted runners do not support nested
+> virtualization, so a high performance loss is expected. Consider using this image in an CI
+> environment as a proof of concept.
+
 ## License
 See the [license](LICENSE.md) file.
