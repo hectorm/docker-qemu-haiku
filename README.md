@@ -11,7 +11,7 @@ docker run --detach \
   --publish 127.0.0.1:5900:5900/tcp \
   --publish 127.0.0.1:6080:6080/tcp \
   --env VM_SSH_KEYS="$(find ~/.ssh/ -name 'id_*.pub' -exec awk 1 '{}' ';')" \
-  docker.io/hectormolinero/qemu-haiku:latest
+  docker.io/hectorm/qemu-haiku:latest
 ```
 
 The instance can be accessed from:
@@ -45,7 +45,7 @@ SSH keys to be added to the VM at startup.
 test-haiku:
   name: 'Test on Haiku'
   runs-on: 'ubuntu-latest'
-  container: 'docker.io/hectormolinero/qemu-haiku:latest'
+  container: 'docker.io/hectorm/qemu-haiku:latest'
   steps:
     - name: 'Wait until the VM is ready'
       run: 'container-init & timeout 600 vmshell exit 0'
@@ -65,7 +65,7 @@ test-haiku:
 test-haiku:
   stage: 'test'
   image:
-    name: 'docker.io/hectormolinero/qemu-haiku:latest'
+    name: 'docker.io/hectorm/qemu-haiku:latest'
     entrypoint: ['']
   before_script:
     - 'container-init & timeout 600 vmshell exit 0'
