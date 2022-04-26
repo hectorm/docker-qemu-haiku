@@ -4,7 +4,7 @@ m4_changequote([[, ]])
 ## "build" stage
 ##################################################
 
-FROM docker.io/ubuntu:22.04 AS build
+FROM docker.io/ubuntu:20.04 AS build
 
 # Install system packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -101,7 +101,7 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 ## "base" stage
 ##################################################
 
-m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:22.04]], [[FROM docker.io/ubuntu:22.04]]) AS base
+m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:20.04]], [[FROM docker.io/ubuntu:20.04]]) AS base
 m4_ifdef([[CROSS_QEMU]], [[COPY --from=docker.io/hectorm/qemu-user-static:latest CROSS_QEMU CROSS_QEMU]])
 
 # Install system packages
