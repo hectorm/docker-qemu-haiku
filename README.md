@@ -15,10 +15,10 @@ docker run --detach \
 ```
 
 The instance can be accessed from:
- * **SSH (2222/TCP):** `ssh -p 2222 user@127.0.0.1`
- * **VNC (5900/TCP):** any VNC client, without credentials.
- * **noVNC (6080/TCP):** http://127.0.0.1:6080/vnc.html
- * **Shell:** `docker exec -it qemu-haiku vmshell`
+ * **SSH** (`2222/TCP`), user `user`, public key authentication.
+ * **VNC** (`5900/TCP`), without password.
+ * **noVNC** (`6080/TCP`), http://127.0.0.1:6080/vnc.html
+ * `docker exec -it qemu-haiku vmshell`
 
 ## Environment variables
 #### `VM_CPU`
