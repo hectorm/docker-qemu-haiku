@@ -24,7 +24,7 @@ TMP_SCRIPTS_DIR="$(mktemp -d)"
 trap 'ret="$?"; rm -rf -- "${TMP_SCRIPTS_DIR:?}"; trap - EXIT; exit "${ret:?}"' EXIT TERM INT HUP
 
 printf 'Downloading scripts...\n'
-wget -T 5 -t 30 --retry-connrefused -rl 1 -np -nd -A sh,pl,py,env -P "${TMP_SCRIPTS_DIR:?}" 'http://10.0.2.254:1337'
+wget -T 5 -t 30 --retry-connrefused -rl 1 -np -nd -A sh,pl,py,env -P "${TMP_SCRIPTS_DIR:?}" 'http://10.0.2.2:1337'
 
 _LC_COLLATE="${LC_COLLATE-}"; LC_COLLATE='C'
 for f in "${TMP_SCRIPTS_DIR:?}"/*; do

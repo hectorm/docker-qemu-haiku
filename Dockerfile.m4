@@ -91,7 +91,7 @@ RUN export HAIKU_IMAGE_SIZE=131072 \
 	&& timeout 900 qemu-system-x86_64 \
 		-machine q35 -smp 2 -m 512M -accel tcg,thread=single \
 		-device VGA -display none -serial stdio \
-		-device virtio-net-pci,netdev=n0 -netdev user,id=n0,restrict=off \
+		-device virtio-net-pci,netdev=n0 -netdev user,id=n0,ipv4=on,ipv6=off,net=10.0.2.0/24,host=10.0.2.2,dns=10.0.2.3,dhcpstart=10.0.2.15 \
 		-device virtio-scsi-pci,id=scsi \
 		-device scsi-hd,id=disk0,bus=scsi.0,drive=disk0 -blockdev driver=raw,node-name=disk0,file.driver=file,file.filename=./haiku-nightly.image \
 	&& qemu-img convert -f raw -O qcow2 ./haiku-nightly.image ./haiku.qcow2 \
@@ -123,8 +123,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 ENV VM_CPU=2
 ENV VM_RAM=1024M
 ENV VM_KEYBOARD=en-us
-ENV VM_NET_GUESTFWD_OPTIONS=guestfwd=tcp:10.0.2.254:1337-cmd:"nc 127.0.0.1 1337"
-ENV VM_NET_HOSTFWD_OPTIONS=hostfwd=tcp::2222-:22
 ENV VM_NET_EXTRA_OPTIONS=
 ENV VM_KVM=true
 ENV SVDIR=/etc/service/
