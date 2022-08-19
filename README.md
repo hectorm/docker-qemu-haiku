@@ -44,7 +44,7 @@ SSH keys to be added to the VM at startup.
 ```yaml
 test-haiku:
   name: 'Test on Haiku'
-  runs-on: 'ubuntu-22.04'
+  runs-on: 'ubuntu-latest'
   container: 'docker.io/hectorm/qemu-haiku:latest'
   steps:
     - name: 'Wait until the VM is ready'
