@@ -108,6 +108,7 @@ m4_ifdef([[CROSS_QEMU]], [[COPY --from=docker.io/hectorm/qemu-user-static:latest
 RUN export DEBIAN_FRONTEND=noninteractive \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends \
+		catatonit \
 		net-tools \
 		netcat-openbsd \
 		openssh-client \
@@ -116,7 +117,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 		qemu-system-x86 \
 		qemu-utils \
 		runit \
-		tini \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Environment
@@ -156,7 +156,7 @@ COPY --chown=root:root ./scripts/vm-net-init/ /etc/vm-net-init/
 RUN find /etc/vm-net-init/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
 RUN find /etc/vm-net-init/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
 
-ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/container-init"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/usr/local/bin/container-init"]
 
 ##################################################
 ## "test" stage
