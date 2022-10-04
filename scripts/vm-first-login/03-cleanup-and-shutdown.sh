@@ -18,7 +18,7 @@ rm -rf "${B_SYSTEM_PACKAGES_DIRECTORY:?}"/administrative/transaction-*/
 rm -rf /boot/_packages_/ /boot/_sources_/
 
 # Remove temporary files
-find "${B_SYSTEM_TEMP_DIRECTORY:?}" -mindepth 1 -delete
+(cd "${B_SYSTEM_TEMP_DIRECTORY:?}" && rm -rf ./.[!.]* ./*)
 
 # Recreate magic file so "package_daemon" processes the first boot of all packages
 touch "${B_SYSTEM_PACKAGES_DIRECTORY:?}"/administrative/FirstBootProcessingNeeded
