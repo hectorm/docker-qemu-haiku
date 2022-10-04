@@ -25,7 +25,7 @@ The instance can be accessed from:
 Number of cores the VM is permitted to use (`2` by default).
 
 #### `VM_RAM`
-Amount of memory the VM is permitted to use (`1024M` by default).
+Amount of memory the VM is permitted to use (`2048M` by default).
 
 #### `VM_KEYBOARD`
 VM keyboard layout (`en-us` by default).
