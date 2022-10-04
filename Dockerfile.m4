@@ -86,16 +86,16 @@ COPY --chown=root:root ./scripts/vm-first-login/ /tmp/haiku/data/system/boot/fir
 RUN find /tmp/haiku/data/system/boot/first_login/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
 RUN find /tmp/haiku/data/system/boot/first_login/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
 RUN export HAIKU_IMAGE_SIZE=131072 \
-	&& jam -qj"$(nproc)" '@nightly-raw' \
+	&& jam -qj"$(nproc)" '@release-raw' \
 	&& cd ./generated/ \
-	&& timeout 900 qemu-system-x86_64 \
+	&& timeout 3600 qemu-system-x86_64 \
 		-machine q35 -smp 2 -m 512M -accel tcg,thread=single \
 		-device VGA -display none -serial stdio \
 		-device virtio-net-pci,netdev=n0 -netdev user,id=n0,ipv4=on,ipv6=off,net=10.0.2.0/24,host=10.0.2.2,dns=10.0.2.3,dhcpstart=10.0.2.15 \
 		-device virtio-scsi-pci,id=scsi \
-		-device scsi-hd,id=disk0,bus=scsi.0,drive=disk0 -blockdev driver=raw,node-name=disk0,file.driver=file,file.filename=./haiku-nightly.image \
-	&& qemu-img convert -f raw -O qcow2 ./haiku-nightly.image ./haiku.qcow2 \
-	&& rm -f ./haiku-nightly.image
+		-device scsi-hd,id=disk0,bus=scsi.0,drive=disk0 -blockdev driver=raw,node-name=disk0,file.driver=file,file.filename=./haiku-release.image \
+	&& qemu-img convert -f raw -O qcow2 ./haiku-release.image ./haiku.qcow2 \
+	&& rm -f ./haiku-release.image
 
 ##################################################
 ## "base" stage
