@@ -77,7 +77,7 @@ test-haiku:
 
 > Please note that at the time of writing GitHub and GitLab hosted runners do not support nested virtualization, so a high performance loss is expected. Consider using this image in an CI environment as a proof of concept.
 
-> Sometimes after installing packages a reboot may be necessary, `pkgman` will print a message like "`A reboot is necessary to complete the installation process`". In such scenario you can add a step in your CI to reboot and wait until the VM is ready, "`sv force-restart qemu && timeout 600 vmshell exit 0`".
+> Sometimes after installing packages a reboot may be necessary, `pkgman` will print a message like "`A reboot is necessary to complete the installation process`". In such scenario you can add a step in your CI to reboot and wait until the VM is ready, "`sv force-restart qemu; timeout 600 vmshell exit 0`".
 
 ## License
 See the [license](LICENSE.md) file.
