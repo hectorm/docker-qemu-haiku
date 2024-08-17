@@ -10,6 +10,7 @@ docker run --detach \
   --publish 127.0.0.1:2222:2222/tcp \
   --publish 127.0.0.1:5900:5900/tcp \
   --publish 127.0.0.1:6080:6080/tcp \
+  --mount type=volume,src=qemu-haiku-disk,dst=/var/lib/qemu/disk/ \
   --env VM_SSH_KEYS="$(find ~/.ssh/ -name 'id_*.pub' -exec awk 1 '{}' ';')" \
   docker.io/hectorm/qemu-haiku:latest
 ```
