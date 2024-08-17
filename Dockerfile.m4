@@ -58,7 +58,7 @@ RUN printf '%s' "${WEBSOCKIFY_TARBALL_CHECKSUM:?}  /tmp/websockify.tgz" | sha256
 RUN mkdir /tmp/websockify/ && tar -xzf /tmp/websockify.tgz --strip-components=1 -C /tmp/websockify/
 
 # Build Haiku
-ARG HAIKU_TREEISH=r1beta4
+ARG HAIKU_TREEISH=r1beta5
 ARG HAIKU_REMOTE=https://review.haiku-os.org/haiku.git
 ARG BUILDTOOLS_TREEISH=${HAIKU_TREEISH}
 ARG BUILDTOOLS_REMOTE=https://review.haiku-os.org/buildtools.git
