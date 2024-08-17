@@ -23,9 +23,6 @@ rm -rf /boot/_packages_/ /boot/_sources_/
 # Recreate magic file so "package_daemon" processes the first boot of all packages
 touch "${B_SYSTEM_PACKAGES_DIRECTORY:?}"/administrative/FirstBootProcessingNeeded
 
-# Fill unused space with zeros
-cat /dev/zero > /zero ||:; sync; rm -f /zero
-
 # Shutdown system when "first_login" file is removed
 nohup sh -eu >/dev/null 2>&1 <<-EOF &
 	while [ -e "${B_USER_SETTINGS_DIRECTORY:?}"/first_login ]; do sleep 1; done
