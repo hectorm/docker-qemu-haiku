@@ -134,8 +134,7 @@ RUN <<-EOF
 		-machine q35 -smp 2 -m 512M -accel tcg,thread=single \
 		-device VGA -display none -serial stdio \
 		-device e1000,netdev=n0 -netdev user,id=n0,ipv4=on,ipv6=off,net=10.0.2.0/24,host=10.0.2.2,dns=10.0.2.3,dhcpstart=10.0.2.15 \
-		-device virtio-scsi-pci,id=scsi \
-		-device scsi-hd,id=disk0,bus=scsi.0,drive=disk0 -blockdev driver=qcow2,node-name=disk0,file.driver=file,file.filename=./generated/haiku.qcow2
+		-device ide-hd,id=disk0,bus=ide.0,drive=disk0 -blockdev driver=qcow2,node-name=disk0,file.driver=file,file.filename=./generated/haiku.qcow2
 EOF
 
 ##################################################
