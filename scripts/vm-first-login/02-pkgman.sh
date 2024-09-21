@@ -7,3 +7,6 @@ until nc -z eu.hpkg.haiku-os.org 80; do sleep 5; done
 
 # Synchronize the installed packages with the Haiku repository
 until pkgman full-sync -y; do sleep 30; done
+
+# Install development and extra packages
+pkgman install -y haiku_devel haiku_extras
