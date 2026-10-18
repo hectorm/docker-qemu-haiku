@@ -89,7 +89,7 @@ RUN <<-EOF
 EOF
 
 # Build Haiku
-ARG HAIKU_TREEISH=r1beta5
+ARG HAIKU_TREEISH=r1beta6
 ARG HAIKU_REMOTE=https://review.haiku-os.org/haiku.git
 ARG BUILDTOOLS_TREEISH=${HAIKU_TREEISH}
 ARG BUILDTOOLS_REMOTE=https://review.haiku-os.org/buildtools.git

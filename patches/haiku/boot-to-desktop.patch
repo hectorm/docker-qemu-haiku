@@ -1,8 +1,8 @@
 diff --git a/build/jam/images/definitions/minimum b/build/jam/images/definitions/minimum
-index 52d78a3a0d..275d0601f1 100644
+index ed19fe86fc..3b8a9ed7f3 100644
 --- a/build/jam/images/definitions/minimum
 +++ b/build/jam/images/definitions/minimum
-@@ -289,3 +289,7 @@ for repository in $(HAIKU_REPOSITORIES) {
+@@ -445,3 +445,7 @@ for repository in $(HAIKU_REPOSITORIES) {
  	AddFilesToHaikuImage system cache package-repositories
  		: $(cache) : $(repository:G=) ;
  }
