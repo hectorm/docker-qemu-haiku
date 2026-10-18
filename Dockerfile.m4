@@ -7,7 +7,7 @@ m4_changequote([[, ]])
 ## "build" stage
 ##################################################
 
-FROM --platform=linux/amd64 docker.io/ubuntu:22.04 AS build
+FROM --platform=linux/amd64 docker.io/ubuntu:26.04 AS build
 
 SHELL ["/bin/sh", "-euc"]
 
@@ -26,10 +26,10 @@ RUN <<-EOF
 		curl \
 		device-tree-compiler \
 		flex \
-		g++-12 \
+		g++-14 \
 		gawk \
-		gcc-12 \
-		gcc-12-multilib \
+		gcc-14 \
+		gcc-14-multilib \
 		git \
 		less \
 		libc6-dev \
@@ -55,15 +55,15 @@ EOF
 
 # Set default toolchain
 RUN <<-EOF
-	update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 1 \
-		--slave /usr/bin/g++ g++ /usr/bin/g++-12 \
-		--slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-12 \
-		--slave /usr/bin/gcc-nm gcc-nm /usr/bin/gcc-nm-12 \
-		--slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-12 \
-		--slave /usr/bin/gcov gcov /usr/bin/gcov-12 \
-		--slave /usr/bin/gcov-dump gcov-dump /usr/bin/gcov-dump-12 \
-		--slave /usr/bin/gcov-tool gcov-tool /usr/bin/gcov-tool-12 \
-		--slave /usr/bin/lto-dump lto-dump /usr/bin/lto-dump-12
+	update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 1 \
+		--slave /usr/bin/g++ g++ /usr/bin/g++-14 \
+		--slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-14 \
+		--slave /usr/bin/gcc-nm gcc-nm /usr/bin/gcc-nm-14 \
+		--slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-14 \
+		--slave /usr/bin/gcov gcov /usr/bin/gcov-14 \
+		--slave /usr/bin/gcov-dump gcov-dump /usr/bin/gcov-dump-14 \
+		--slave /usr/bin/gcov-tool gcov-tool /usr/bin/gcov-tool-14 \
+		--slave /usr/bin/lto-dump lto-dump /usr/bin/lto-dump-14
 	update-alternatives --install /usr/bin/cc cc /usr/bin/gcc 1
 	update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++ 1
 EOF
@@ -138,7 +138,7 @@ EOF
 ## "base" stage
 ##################################################
 
-m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:22.04]], [[FROM docker.io/ubuntu:22.04]]) AS base
+m4_ifdef([[CROSS_ARCH]], [[FROM docker.io/CROSS_ARCH/ubuntu:26.04]], [[FROM docker.io/ubuntu:26.04]]) AS base
 
 SHELL ["/bin/sh", "-euc"]
 
