@@ -6,6 +6,7 @@ A Docker image for the [Haiku](https://www.haiku-os.org) operating system.
 ```sh
 docker run --detach \
   --name qemu-haiku \
+  --stop-timeout 30 \
   --device /dev/kvm \
   --publish 127.0.0.1:2222:2222/tcp \
   --publish 127.0.0.1:5900:5900/tcp \
