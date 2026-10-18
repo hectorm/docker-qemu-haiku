@@ -19,7 +19,11 @@ fi
 cd_i=0
 for cd in /var/lib/qemu/cd/*; do
 	[ -f "${cd:?}" ] || continue
-	set -- "$@" -device ide-cd,id=cd"${cd_i:?}",bus=ide.1,drive=cd"${cd_i:?}" -blockdev driver=raw,node-name=cd"${cd_i:?}",file.driver=file,file.filename="${cd:?}",read-only=on
+	if [ "${cd_i:?}" -ge 5 ]; then
+		printf '%s\n' "No IDE slot left for \"${cd:?}\", ignoring it" >&2
+		continue
+	fi
+	set -- "$@" -device ide-cd,id=cd"${cd_i:?}",bus=ide.$((cd_i + 1)),drive=cd"${cd_i:?}" -blockdev driver=raw,node-name=cd"${cd_i:?}",file.driver=file,file.filename="${cd:?}",read-only=on
 	cd_i="$((cd_i + 1))"
 done
 
