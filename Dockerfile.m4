@@ -1,4 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1
+# check=skip=FromPlatformFlagConstDisallowed
 
 m4_changequote([[, ]])
 
@@ -6,7 +7,7 @@ m4_changequote([[, ]])
 ## "build" stage
 ##################################################
 
-FROM --platform=${BUILDPLATFORM} docker.io/ubuntu:22.04 AS build
+FROM --platform=linux/amd64 docker.io/ubuntu:22.04 AS build
 
 SHELL ["/bin/sh", "-euc"]
 
@@ -196,8 +197,10 @@ ENTRYPOINT ["/usr/bin/catatonit", "--", "/usr/local/bin/container-init"]
 
 FROM base AS test
 
+ARG BUILDARCH
+ARG TARGETARCH
 RUN <<-EOF
-	if [ "$(uname -m)" = 'x86_64' ]; then
+	if [ "${BUILDARCH:?}" = "${TARGETARCH:?}" ]; then
 		container-init &
 		printf '%s\n' 'The quick brown fox jumps over the lazy dog' > /tmp/in || exit 1
 		cat /tmp/in | timeout 900 vmshell 'cat - > /tmp/local; uname -a' || exit 1
