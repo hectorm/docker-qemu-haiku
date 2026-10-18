@@ -69,9 +69,9 @@ RUN <<-EOF
 EOF
 
 # Download noVNC
-ARG NOVNC_VERSION=v1.6.0
+ARG NOVNC_VERSION=v1.7.0
 ARG NOVNC_TARBALL_URL=https://github.com/novnc/noVNC/archive/${NOVNC_VERSION}.tar.gz
-ARG NOVNC_TARBALL_CHECKSUM=5066103959ef4e9b10f37e5a148627360dd8414e4cf8a7db92bdbd022e728aaa
+ARG NOVNC_TARBALL_CHECKSUM=b1003a11b6e6e8d8f7f5e5586daae7f8ca651d8aee0aa155ff9ac841c48f52c6
 RUN <<-EOF
 	curl -Lo /tmp/novnc.tgz "${NOVNC_TARBALL_URL:?}"
 	printf '%s' "${NOVNC_TARBALL_CHECKSUM:?}  /tmp/novnc.tgz" | sha256sum -c
