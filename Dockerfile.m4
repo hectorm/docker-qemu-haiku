@@ -1,3 +1,5 @@
+# syntax=docker.io/docker/dockerfile:1
+
 m4_changequote([[, ]])
 
 ##################################################
@@ -92,9 +94,7 @@ ARG BUILDTOOLS_TREEISH=${HAIKU_TREEISH}
 ARG BUILDTOOLS_REMOTE=https://review.haiku-os.org/buildtools.git
 WORKDIR /tmp/buildtools/
 RUN <<-EOF
-	git clone "${BUILDTOOLS_REMOTE:?}" ./
-	git checkout "${BUILDTOOLS_TREEISH:?}"
-	git submodule update --init --recursive
+	git clone --depth 1 --revision="${BUILDTOOLS_TREEISH:?}" --recurse-submodules --shallow-submodules "${BUILDTOOLS_REMOTE:?}" ./
 EOF
 WORKDIR /tmp/buildtools/jam/
 RUN <<-EOF
@@ -118,11 +118,7 @@ RUN <<-EOF
 		--use-gcc-pipe \
 		-j"$(nproc)"
 EOF
-COPY --chown=root:root ./scripts/vm-first-login/ /tmp/haiku/data/system/boot/first_login/
-RUN <<-EOF
-	find /tmp/haiku/data/system/boot/first_login/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
-	find /tmp/haiku/data/system/boot/first_login/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
-EOF
+COPY --chown=root:root --chmod=0755 ./scripts/vm-first-login/ /tmp/haiku/data/system/boot/first_login/
 RUN <<-EOF
 	export HAIKU_IMAGE_SIZE=131072
 	jam -qj"$(nproc)" '@release-raw'
@@ -181,32 +177,16 @@ COPY --from=build --chown=root:root /tmp/websockify/ /opt/novnc/utils/websockify
 COPY --from=build --chown=root:root /tmp/haiku/generated/haiku.qcow2 /var/lib/qemu/disk/haiku.qcow2
 
 # Copy SSH config
-COPY --chown=root:root ./config/ssh/ /etc/ssh/
-RUN <<-EOF
-	find /etc/ssh/ssh_config.d/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
-	find /etc/ssh/ssh_config.d/ -type f -not -perm 0644 -exec chmod 0644 '{}' ';'
-EOF
+COPY --chown=root:root --chmod=a+rX,u+w,go-w ./config/ssh/ /etc/ssh/
 
 # Copy services
-COPY --chown=root:root ./scripts/service/ /etc/service/
-RUN <<-EOF
-	find /etc/service/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
-	find /etc/service/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
-EOF
+COPY --chown=root:root --chmod=0755 ./scripts/service/ /etc/service/
 
 # Copy bin scripts
-COPY --chown=root:root ./scripts/bin/ /usr/local/bin/
-RUN <<-EOF
-	find /usr/local/bin/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
-	find /usr/local/bin/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
-EOF
+COPY --chown=root:root --chmod=0755 ./scripts/bin/ /usr/local/bin/
 
 # Copy net init scripts
-COPY --chown=root:root ./scripts/vm-net-init/ /etc/vm-net-init/
-RUN <<-EOF
-	find /etc/vm-net-init/ -type d -not -perm 0755 -exec chmod 0755 '{}' ';'
-	find /etc/vm-net-init/ -type f -not -perm 0755 -exec chmod 0755 '{}' ';'
-EOF
+COPY --chown=root:root --chmod=0755 ./scripts/vm-net-init/ /etc/vm-net-init/
 
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/usr/local/bin/container-init"]
 
