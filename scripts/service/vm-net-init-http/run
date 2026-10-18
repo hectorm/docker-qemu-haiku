@@ -4,4 +4,4 @@ set -eu
 
 cd /etc/vm-net-init/
 exec 2>&1
-exec /usr/bin/python3 -m http.server 1337
+exec /usr/bin/python3 -m http.server --bind 127.0.0.1 1337
